@@ -3,21 +3,31 @@ const request = require('request');
 const cheerio = require('cheerio');
 const glob = require('glob');
 
-const links = require('./urls/manto.json');
+// const links = require('./urls/manto.json');
 
 var link;
 
-if (links) {
+/* if (links) {
     console.log('link: ', links[0]);
     link = links[0];
     scrape(link);
 } else {
     console.log('could not read file');
-}
+} */
+jsonFileList();
 
 function jsonFileList() {
-    const dir = './urls';
-    // read all json files through glob
+    const dir = './urls/*.json';
+    var outputDir = 'output/';
+    glob(dir, function (err, files) {
+        if(!err) {
+            for(var i = 0; i < files.length; i++) {
+                urls = require(files[i]);
+                console.log('urls', urls);
+                console.log();
+            }
+        }
+    });
 }
 
 function scrape(link) {

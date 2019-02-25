@@ -38,12 +38,17 @@ function scrapeUrl(urls, cb) {
         var url = urls.pop();
         var fileName = url.split('stories/').pop().split('?')[0] + '.txt';
         var filePath = outputDir + fileName;
-        scrape(url, filePath, function (err) {
-
+        scrape(url, filePath, function (err, scraped) {
+            var t;
+            if (!err) {
+                t = scraped? 0: 20000;
+            } else {
+                t = 50000;
+            }
             setTimeout(function () {
                 console.log(Date.now() - startTime);
                 scrapeUrl(urls, cb);
-            }, err? 50000: 20000);
+            }, t);
 
         });
     } else {
@@ -64,6 +69,7 @@ function scrape(link, filePath, cb) {
 
                 $('.poemPageContentBody .pMC .w .c').filter(function () {
                     if (oneTime) {
+                        oneTime = false;
                         var data = $(this);
 
                         // console.log(data.text());
@@ -82,12 +88,12 @@ function scrape(link, filePath, cb) {
                 })
             } else {
                 console.log('err: ', err);
-                cb(err);
+                cb(err, false);
             }
         });
     } else {
         console.log('already scraped: ', filePath);
-        cb();
+        cb(false, true);
     }
 
 }
